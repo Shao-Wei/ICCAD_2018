@@ -306,7 +306,7 @@ string WMMgr::hex2bin(char c)
 
 void WMMgr::WriteFile()
 {
-    cout << _states[0]->_input[3]->_input << " , " << _states[0]->_input[3]->_output << endl;
+    cout << _states[0]->_input[0]->_input << " , " << _states[0]->_input[0]->_output << endl;
     cout << _states[0]->_input[2]->_input << " , " << _states[0]->_input[2]->_output << endl;
     cout << _states[0]->_input[1]->_input << " , " << _states[0]->_input[1]->_output << endl;
 }
