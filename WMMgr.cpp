@@ -118,60 +118,7 @@ bool WMMgr::ReadFile(char* inputfile, char* input_w1, char* input_w2, char* inpu
 {
     string line; // for getline (tmp string)
     string del = " ";
-    //-- store watermark 128'b ------------------------------------
-    fstream fs_w1;
-    string  binary1; 
-    fs_w1.open(input_w1, ios::in);
-    getline(fs_w1, line);
-    for(size_t i=0; i<32; i++){
-        binary1 = binary1 + hex2bin(line[i]);
-    }
-    transition* t1 = new transition(0, 0, "", "");
-    transition* t2 = new transition(0, 0, "", "");
-    _w1 = new subseq();
-    _w1->setseq(binary1);
-    _w1->sethead(t1);
-    _w1->settail(t2);
-    _subseq.push_back(_w1);
-    _transitions.push_back(t1);
-    _transitions.push_back(t2);
-    fs_w1.close();
 
-    fstream fs_w2;
-    string  binary2; 
-    fs_w2.open(input_w2, ios::in);
-    getline(fs_w2, line);
-    for(size_t i=0; i<32; i++){
-        binary2 = binary2 + hex2bin(line[i]);
-    }
-    transition* t3 = new transition(0, 0, "", "");
-    transition* t4 = new transition(0, 0, "", "");
-    _w2 = new subseq();
-    _w2->setseq(binary2);
-    _w2->sethead(t3);
-    _w2->settail(t4);
-    _subseq.push_back(_w2);
-    _transitions.push_back(t3);
-    _transitions.push_back(t4);
-    fs_w2.close();
-
-    fstream fs_w3;
-    string  binary3; 
-    fs_w3.open(input_w3, ios::in);
-    getline(fs_w3, line);
-    for(size_t i=0; i<32; i++){
-        binary3 = binary3 + hex2bin(line[i]);
-    }
-    transition* t5 = new transition(0, 0, "", "");
-    transition* t6 = new transition(0, 0, "", "");
-    _w3 = new subseq();
-    _w3->setseq(binary3);
-    _w3->sethead(t5);
-    _w3->settail(t6);
-    _subseq.push_back(_w3);
-    _transitions.push_back(t5);
-    _transitions.push_back(t6);
-    fs_w3.close();
 	
     //-- initial .i .o .s .p .r -----------------------------------
     size_t blank;
@@ -206,6 +153,74 @@ bool WMMgr::ReadFile(char* inputfile, char* input_w1, char* input_w2, char* inpu
 	reset_state = line.substr(blank+2);
 	r_state = atoi(reset_state.c_str());
 
+    //-- store watermark 128'b ------------------------------------
+    int pad0=0;
+
+    fstream fs_w1;
+    string  binary1; 
+    fs_w1.open(input_w1, ios::in);
+    getline(fs_w1, line);
+    for(size_t i=0; i<32; i++){
+        binary1 = binary1 + hex2bin(line[i]);
+    }
+    pad0=((in_num+out_num)-binary1.size()%(in_num+out_num))
+    for(int i=0;i<pad0;i++){
+        binary1=binary1+'0';
+    }
+    transition* t1 = new transition(0, 0, "", "");
+    transition* t2 = new transition(0, 0, "", "");
+    _w1 = new subseq();
+    _w1->setseq(binary1);
+    _w1->sethead(t1);
+    _w1->settail(t2);
+    _subseq.push_back(_w1);
+    _transitions.push_back(t1);
+    _transitions.push_back(t2);
+    fs_w1.close();
+
+    fstream fs_w2;
+    string  binary2; 
+    fs_w2.open(input_w2, ios::in);
+    getline(fs_w2, line);
+    for(size_t i=0; i<32; i++){
+        binary2 = binary2 + hex2bin(line[i]);
+    }
+    pad0=((in_num+out_num)-binary2.size()%(in_num+out_num))
+    for(int i=0;i<pad0;i++){
+        binary2=binary2+'0';
+    }
+    transition* t3 = new transition(0, 0, "", "");
+    transition* t4 = new transition(0, 0, "", "");
+    _w2 = new subseq();
+    _w2->setseq(binary2);
+    _w2->sethead(t3);
+    _w2->settail(t4);
+    _subseq.push_back(_w2);
+    _transitions.push_back(t3);
+    _transitions.push_back(t4);
+    fs_w2.close();
+
+    fstream fs_w3;
+    string  binary3; 
+    fs_w3.open(input_w3, ios::in);
+    getline(fs_w3, line);
+    for(size_t i=0; i<32; i++){
+        binary3 = binary3 + hex2bin(line[i]);
+    }
+    pad0=((in_num+out_num)-binary3.size()%(in_num+out_num))
+    for(int i=0;i<pad0;i++){
+        binary3=binary3+'0';
+    }
+    transition* t5 = new transition(0, 0, "", "");
+    transition* t6 = new transition(0, 0, "", "");
+    _w3 = new subseq();
+    _w3->setseq(binary3);
+    _w3->sethead(t5);
+    _w3->settail(t6);
+    _subseq.push_back(_w3);
+    _transitions.push_back(t5);
+    _transitions.push_back(t6);
+    fs_w3.close();
     //-- states & transitions -------------------------------------
     for(int i=0; i<statenum; i++){
         state* s = new state();
@@ -229,13 +244,16 @@ bool WMMgr::ReadFile(char* inputfile, char* input_w1, char* input_w2, char* inpu
         bool   no_dc = true;
         string inout = tok[0] + tok[3];
         inout_set.push_back(inout);
-        while(cnt < inout_set.size()){  
+        while(cnt < inout_set.size()){ 
+            cout<<inout_set[cnt]<<endl; 
             no_dc = true; 
             for(int i=0; i<_inlength + _outlength; i++){
                 if(inout_set[cnt][i] == '-'){
                     no_dc = false;
-                    string add1 = inout.substr(0, i) + '1' + inout.substr(i+1);
-                    string add2 = inout.substr(0, i) + '0' + inout.substr(i+1);
+                    cout<<cnt<<" "<<i<<endl;
+                    string add1 = inout_set[cnt].substr(0, i) + '1' + inout_set[cnt].substr(i+1);
+                    string add2 = inout_set[cnt].substr(0, i) + '0' + inout_set[cnt].substr(i+1);
+                    cout<<add1<<" "<<add2<<endl;
                     inout_set.push_back(add1);
                     inout_set.push_back(add2);
                     break;
@@ -288,9 +306,9 @@ string WMMgr::hex2bin(char c)
 
 void WMMgr::WriteFile()
 {
-    cout << _states[0]->_input[0]->_input << " , " << _states[0]->_input[0]->_output << endl;
-    cout << _states[1]->_output[0]->_input << " , " << _states[1]->_output[0]->_output << endl;
-    cout << _states[1]->_output[1]->_input << " , " << _states[1]->_output[1]->_output << endl;
+    cout << _states[0]->_input[3]->_input << " , " << _states[0]->_input[3]->_output << endl;
+    cout << _states[0]->_input[2]->_input << " , " << _states[0]->_input[2]->_output << endl;
+    cout << _states[0]->_input[1]->_input << " , " << _states[0]->_input[1]->_output << endl;
 }
 
 vector<string> WMMgr::str_tok(const string& s, const string& seperator)
