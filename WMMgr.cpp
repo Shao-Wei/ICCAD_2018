@@ -163,7 +163,7 @@ bool WMMgr::ReadFile(char* inputfile, char* input_w1, char* input_w2, char* inpu
     for(size_t i=0; i<32; i++){
         binary1 = binary1 + hex2bin(line[i]);
     }
-    pad0=((in_num+out_num)-binary1.size()%(in_num+out_num))
+    pad0=((in_num+out_num)-binary1.size()%(in_num+out_num));
     for(int i=0;i<pad0;i++){
         binary1=binary1+'0';
     }
@@ -185,7 +185,7 @@ bool WMMgr::ReadFile(char* inputfile, char* input_w1, char* input_w2, char* inpu
     for(size_t i=0; i<32; i++){
         binary2 = binary2 + hex2bin(line[i]);
     }
-    pad0=((in_num+out_num)-binary2.size()%(in_num+out_num))
+    pad0=((in_num+out_num)-binary2.size()%(in_num+out_num));
     for(int i=0;i<pad0;i++){
         binary2=binary2+'0';
     }
@@ -207,7 +207,7 @@ bool WMMgr::ReadFile(char* inputfile, char* input_w1, char* input_w2, char* inpu
     for(size_t i=0; i<32; i++){
         binary3 = binary3 + hex2bin(line[i]);
     }
-    pad0=((in_num+out_num)-binary3.size()%(in_num+out_num))
+    pad0=((in_num+out_num)-binary3.size()%(in_num+out_num));
     for(int i=0;i<pad0;i++){
         binary3=binary3+'0';
     }
@@ -239,6 +239,8 @@ bool WMMgr::ReadFile(char* inputfile, char* input_w1, char* input_w2, char* inpu
         child = atoi(tok[2].substr(1).c_str());
         currstate = _states[curr];
         childstate = _states[child];
+        if(!currstate->hasname()){currstate->setname(tok[1].substr(1).c_str());}
+        if(!childstate->hasname()){childstate->setname(tok[2].substr(1).c_str());}
         // extend if - exists
         size_t cnt = 0;
         bool   no_dc = true;
@@ -275,6 +277,7 @@ bool WMMgr::ReadFile(char* inputfile, char* input_w1, char* input_w2, char* inpu
     }
     _initial=_states[r_state];
     cout << "term" << term << endl;
+    _term=term;
 	if(term < statenum*(2^(in_num+out_num))) return true;
 	else return false;
 }
@@ -304,11 +307,20 @@ string WMMgr::hex2bin(char c)
     return result;
 }
 
-void WMMgr::WriteFile()
+void WMMgr::WriteFile(char* optfile_name)
 {
-    cout << _states[0]->_input[0]->_input << " , " << _states[0]->_input[0]->_output << endl;
+    fstream os;
+    os.open(optfile_name,ios::out);
+    os<<".i "<<_inlength<<endl<<".o "<<_outlength<<endl<<".s "<<_states.size()<<endl<<".p "<<_term<<endl<<".r "<<_initial->getname()<<endl;
+    for(unsigned i =0 ;i<_states.size();i++){
+        for(unsigned j =0;j<_states[i]->_output.size();j++){
+                os<<_states[i]->_output[j]->_input<<" "<<_states[i]->getname()<<" "<<_states[i]->_output[j]->_end->getname()<<" "<<_states[i]->_output[j]->_output<<endl;
+        }
+    }
+    os<<".e\n";
+    /*cout << _states[0]->_input[3]->_input << " , " << _states[0]->_input[3]->_output << endl;
     cout << _states[0]->_input[2]->_input << " , " << _states[0]->_input[2]->_output << endl;
-    cout << _states[0]->_input[1]->_input << " , " << _states[0]->_input[1]->_output << endl;
+    cout << _states[0]->_input[1]->_input << " , " << _states[0]->_input[1]->_output << endl;*/
 }
 
 vector<string> WMMgr::str_tok(const string& s, const string& seperator)

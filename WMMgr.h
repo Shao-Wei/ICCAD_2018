@@ -23,7 +23,7 @@ bool ReadFile(char* inputfile, char* input_w1, char* input_w2, char* input_w3);
 void CutAll(){}          //TODO
 bool CutSeq(subseq* s){ return true; } //TODO 
 void LinkSeq(){}         //TODO
-void WriteFile();        //TODO
+void WriteFile(char* optfile_name);        //TODO
 /*-----------------------------------------------------------------------------
 ReadFile(): ReadFile() reads the input .KISS and three watermark sequences.
 Then constructs internal graph, and store watermark sequences to _watermark. 
@@ -53,6 +53,7 @@ vector<transition*> _transitions;
 state* _initial;
 int _inlength;
 int _outlength;
+int _term;
 subseq* _w1; // _subseq[0], preserving _head info
 subseq* _w2; // _subseq[1], preserving _head info
 subseq* _w3; // _subseq[2], preserving _head info
@@ -69,14 +70,19 @@ vector<path*> _path;
 class state
 {
 public:
-state(){}
+state(){nameset=false;}
 ~state(){}
-
 void addFanin (transition* t) { _input.push_back(t); }
 void addFanout(transition* t) { _output.push_back(t); }
+void setname(string statename){ name='s'+statename; nameset=true; }
+bool hasname(){return nameset; }
+string getname(){return name;}
+
 
 vector<transition*> _input;
 vector<transition*> _output;
+string name;
+bool nameset;
 };
 
 class transition

@@ -7,6 +7,6 @@ int main(int argc, char** argv)
         cout << "hi" << endl;
     //mgr.CutAll();
     //mgr.LinkSeq();
-    mgr.WriteFile();
+    mgr.WriteFile(argv[5]);
 
 }
